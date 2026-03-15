@@ -99,7 +99,16 @@ const AdminRegisterPage = () => {
             setLoader(false)
         }
         else if (status === 'error') {
-            console.log(error)
+            console.error('Registration error:', error);
+            let errorMsg = 'Network error. Please check backend server.';
+            if (error) {
+                if (error.response?.data?.error) errorMsg = error.response.data.error;
+                else if (error.response?.data?.message) errorMsg = error.response.data.message;
+                else if (error.message) errorMsg = error.message;
+            }
+            setMessage(errorMsg);
+            setShowPopup(true);
+            setLoader(false);
         }
     }, [status, currentUser, currentRole, navigate, error, response]);
 
