@@ -23,10 +23,6 @@ const float = keyframes`
     50% { transform: translateY(-15px); }
 `;
 
-const pulse = keyframes`
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-`;
 
 const gradientMove = keyframes`
     0% { background-position: 0% 50%; }
@@ -124,6 +120,10 @@ const Container = styled(Box)`
     position: relative;
     overflow: hidden;
 
+    @media (max-width: 600px) {
+        padding: 40px 16px;
+    }
+
     &::before {
         content: '';
         position: absolute;
@@ -137,6 +137,7 @@ const Container = styled(Box)`
         pointer-events: none;
     }
 `;
+
 
 const ContentWrapper = styled(Box)`
     width: 100%;
@@ -214,6 +215,7 @@ const AccountCard = styled(Paper)`
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     height: 100%;
+    min-height: 300px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -221,6 +223,13 @@ const AccountCard = styled(Paper)`
     position: relative;
     overflow: hidden;
     animation: ${slideUp} 0.6s ease-out backwards;
+
+    @media (max-width: 600px) {
+        padding: 24px 20px;
+        min-height: 280px;
+        border-radius: 20px;
+    }
+
 
     ${props => props.$delay && css`
         animation-delay: ${props.$delay};
@@ -264,6 +273,18 @@ const IconWrapper = styled(Box)`
     box-shadow: 0 8px 24px ${props => props.$glowColor};
     transition: all 0.4s ease;
 
+    @media (max-width: 600px) {
+        width: 64px;
+        height: 64px;
+        font-size: 2rem;
+
+        & svg {
+            font-size: 2rem !important;
+            width: 2rem !important;
+            height: 2rem !important;
+        }
+    }
+
     & svg {
         font-size: 2.5rem !important;
         width: 2.5rem !important;
@@ -281,6 +302,7 @@ const IconWrapper = styled(Box)`
     `}
 `;
 
+
 const CardTitle = styled(Typography)`
     font-size: 1.35rem;
     font-weight: 700;
@@ -289,7 +311,12 @@ const CardTitle = styled(Typography)`
     position: relative;
     z-index: 1;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+    @media (max-width: 600px) {
+        font-size: 1.2rem;
+    }
 `;
+
 
 const CardText = styled(Typography)`
     color: ${props => props.$textColor || '#4b5563'};
@@ -297,7 +324,12 @@ const CardText = styled(Typography)`
     line-height: 1.6;
     position: relative;
     z-index: 1;
+
+    @media (max-width: 600px) {
+        font-size: 0.85rem;
+    }
 `;
+
 
 // Selection indicator
 const SelectedBadge = styled(Box)`
@@ -354,13 +386,14 @@ const AccountTypeChooser = ({
 
     const getGridColumns = () => {
         switch (columns) {
-            case 2: return { xs: 12, sm: 6 };
-            case 4: return { xs: 12, sm: 6, md: 3 };
-            case 5: return { xs: 12, sm: 6, md: 2.4 };
+            case 2: return { xs: 6, sm: 6 };
+            case 4: return { xs: 6, sm: 6, md: 3 };
+            case 5: return { xs: 6, sm: 6, md: 2.4 };
             case 1: return { xs: 12 };
-            default: return { xs: 12, sm: 6, md: 4 };
+            default: return { xs: 6, sm: 6, md: 3 };
         }
     };
+
 
     const gridColumns = getGridColumns();
 
@@ -429,7 +462,8 @@ const AccountTypeChooser = ({
                 </HeaderSection>
 
                 {/* Account Cards */}
-                <Grid container spacing={3} justifyContent="center">
+                <Grid container spacing={{ xs: 2, sm: 3 }} justifyContent="center">
+
                     {availableTypes.map((type, index) => {
                         const config = accountTypesConfig[type];
                         if (!config) return null;

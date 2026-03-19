@@ -233,7 +233,9 @@ const fetchAvailableData = async (classId) => {
                                         <Typography variant="body2">{assignment.teacher?.email || 'N/A'}</Typography>
                                     </TableCell>
                                     <TableCell>
-                                        <SubjectChip label={assignment.subject?.subName || 'N/A'} />
+<Typography variant="body2" fontWeight="medium" sx={{ bgcolor: '#e8f5e9', color: '#2e7d32', px: 2, py: 0.5, borderRadius: 2, display: 'inline-block', fontSize: '0.8rem' }}>
+  {assignment.subject?.subName || 'N/A'}
+</Typography>
                                     </TableCell>
                                     <TableCell>
                                         <RemoveButton color="error" size="small" startIcon={<DeleteIcon />} onClick={() => handleRemoveAssignment(assignment._id)}>

@@ -4,8 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Popup from '../../../components/Popup';
 import { registerUser } from '../../../redux/userRelated/userHandle';
 import { underControl } from '../../../redux/userRelated/userSlice';
-import { CircularProgress, Box, Typography, Button, Container, Paper, TextField } from '@mui/material';
-import { getAllTeachers } from '../../../redux/teacherRelated/teacherHandle';
+import { CircularProgress, Box, Typography, Button, Input } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 const AddTeacher = () => {
@@ -16,12 +15,9 @@ const AddTeacher = () => {
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
   const [password, setPassword] = useState('');
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
-
 
   const [showPopup, setShowPopup] = useState(false);
   const [message, setMessage] = useState('');
@@ -48,36 +44,30 @@ const AddTeacher = () => {
   };
 
   const getFields = () => {
-    const baseFields = { name, email, phone, address, password, role, school };
+    const baseFields = { name, email, password, role, school };
     return photo ? { ...baseFields, photo } : baseFields;
   };
-
 
   const submitHandler = (event) => {
     event.preventDefault();
 
     if (!school) {
-      setMessage('School not found. Please login as admin first.');
+      setMessage('School not found. Please login as admin.');
       setShowPopup(true);
       return;
     }
 
-    // No frontend validation for name/email/password - let backend handle
-
-
     console.log('Registering teacher with:', getFields());
     setLoader(true);
-    dispatch(registerUser(getFields(), role));
+    const fields = getFields();
+    dispatch(registerUser(fields, role));
   };
 
   useEffect(() => {
     if (status === 'added') {
       setLoader(false);
       dispatch(underControl());
-      
-      setMessage('Teacher added successfully!');
-      setShowPopup(true);
-      setTimeout(() => navigate('/Admin/teachers'), 1500);
+      navigate('/Admin/teachers');
     } else if (status === 'failed') {
       setMessage(response || 'Failed to add teacher');
       setShowPopup(true);
@@ -87,107 +77,55 @@ const AddTeacher = () => {
       setShowPopup(true);
       setLoader(false);
     }
-  }, [status, navigate, error, response, dispatch, currentUser._id, getAllTeachers]);
+  }, [status, navigate, error, response, dispatch]);
 
   return (
     <div style={{ height: '100vh', overflowY: 'auto' }}>
-<Container maxWidth="sm" sx={{ mt: 4, mb: 4, py: 4, px: 3, backgroundColor: 'white', borderRadius: 2, boxShadow: 1 }}>
-<Paper elevation={0} sx={{ p: 4, backgroundColor: 'transparent' }}>
-          <form onSubmit={submitHandler}>
-          <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ color: '#333', mb: 3, fontWeight: 600 }}>
+      <div className="register">
+        <form className="registerForm" onSubmit={submitHandler}>
+          <span className="registerTitle">
             Add New Teacher
-          </Typography>
-          <Typography variant="body2" color="textSecondary" align="center" sx={{ mb: 4 }}>
+          </span>
+          <br />
+          <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
             Note: Class and subject can be assigned later from the Teachers dashboard using Assign Teacher.
           </Typography>
-          
-          <TextField
-            fullWidth
-            label="Name *"
+
+          <label>Name *</label>
+          <input
+            className="registerInput"
             type="text"
             placeholder="Enter teacher's name..."
             value={name}
             onChange={(event) => setName(event.target.value)}
             autoComplete="name"
             required
-            margin="normal"
-            sx={{ 
-              '& .MuiInputBase-input': { color: '#000' },
-              '& .MuiInputLabel-root': { color: '#555' },
-              '& .MuiOutlinedInput-root': { backgroundColor: 'white' }
-            }}
           />
 
-          <TextField
-            fullWidth
-            label="Email *"
+          <label>Email *</label>
+          <input
+            className="registerInput"
             type="email"
             placeholder="Enter teacher's email..."
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             autoComplete="email"
             required
-            margin="normal"
-            sx={{ 
-              '& .MuiInputBase-input': { color: '#000' },
-              '& .MuiInputLabel-root': { color: '#555' },
-              '& .MuiOutlinedInput-root': { backgroundColor: 'white' }
-            }}
           />
 
-          <TextField
-            fullWidth
-            label="Phone (Optional)"
-            type="tel"
-            placeholder="Enter teacher's phone number..."
-            value={phone}
-            onChange={(event) => setPhone(event.target.value)}
-            autoComplete="tel"
-            margin="normal"
-            sx={{ 
-              '& .MuiInputBase-input': { color: '#000' },
-              '& .MuiInputLabel-root': { color: '#555' },
-              '& .MuiOutlinedInput-root': { backgroundColor: 'white' }
-            }}
-          />
-
-          <TextField
-            fullWidth
-            label="Address (Optional)"
-            multiline
-            rows={3}
-            placeholder="Enter teacher's address..."
-            value={address}
-            onChange={(event) => setAddress(event.target.value)}
-            margin="normal"
-            sx={{ 
-              '& .MuiInputBase-input': { color: '#000' },
-              '& .MuiInputLabel-root': { color: '#555' },
-              '& .MuiOutlinedInput-root': { backgroundColor: 'white', resize: 'vertical' }
-            }}
-          />
-
-          <TextField
-            fullWidth
-            label="Password *"
+          <label>Password *</label>
+          <input
+            className="registerInput"
             type="password"
             placeholder="Enter teacher's password..."
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             autoComplete="new-password"
             required
-            margin="normal"
-            sx={{ 
-              '& .MuiInputBase-input': { color: '#000' },
-              '& .MuiInputLabel-root': { color: '#555' },
-              '& .MuiOutlinedInput-root': { backgroundColor: 'white' }
-            }}
           />
 
-          <Typography variant="h6" gutterBottom sx={{ mt: 3, mb: 1, color: '#333', fontWeight: 500 }}>
-            Teacher Photo (Optional)
-          </Typography>
-          <Box sx={{ mb: 3 }}>
+          <label>Teacher Photo (Optional)</label>
+          <Box sx={{ mb: 2 }}>
             {!photoPreview ? (
               <Box
                 sx={{
@@ -203,8 +141,8 @@ const AddTeacher = () => {
                 }}
                 onClick={() => document.getElementById('teacher-photo-upload').click()}
               >
-                <CloudUploadIcon sx={{ fontSize: 48, color: '#999', mb: 1 }} />
-                <Typography variant="body2" color="textSecondary" sx={{ color: '#666' }}>
+                <CloudUploadIcon sx={{ fontSize: 48, color: '#ccc', mb: 1 }} />
+                <Typography variant="body2" color="textSecondary">
                   Click to upload photo
                 </Typography>
                 <Typography variant="caption" color="textSecondary">
@@ -251,32 +189,15 @@ const AddTeacher = () => {
             />
           </Box>
 
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            size="large"
-            disabled={loader}
-            sx={{ 
-              mt: 2, 
-              py: 1.5, 
-              backgroundColor: '#1976d2',
-              '&:hover': { backgroundColor: '#1565c0' },
-              color: 'white',
-              fontWeight: 600,
-              textTransform: 'none',
-              boxShadow: 2
-            }}
-          >
+          <button className="registerButton" type="submit" disabled={loader}>
             {loader ? (
               <CircularProgress size={24} color="inherit" />
             ) : (
               'Register Teacher'
             )}
-          </Button>
-            </form>
-        </Paper>
-      </Container>
+          </button>
+        </form>
+      </div>
 
       <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
     </div>

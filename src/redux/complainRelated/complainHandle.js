@@ -3,8 +3,13 @@ import {
     getRequest,
     getSuccess,
     getFailed,
-    getError
+    getError,
+    createRequest,
+    createSuccess,
+    createFailed,
+    createError
 } from './complainSlice';
+
 
 /**
  * Safely extracts a serializable error message from an error object.
@@ -46,3 +51,21 @@ export const getAllComplains = (id, address) => async (dispatch) => {
         dispatch(getError(extractErrorMessage(error)));
     }
 }
+
+export const createComplain = (fields) => async (dispatch) => {
+    dispatch(createRequest());
+
+    try {
+        const result = await axios.post(`${process.env.REACT_APP_BASE_URL}/ComplainCreate`, fields, {
+            headers: { 'Content-Type': 'application/json' },
+        });
+        dispatch(createSuccess());
+    } catch (error) {
+        if (error.response?.data?.message) {
+            dispatch(createFailed(error.response.data.message));
+        } else {
+            dispatch(createError(extractErrorMessage(error)));
+        }
+    }
+}
+

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom'
 import { getAllTeachers } from '../../../redux/teacherRelated/teacherHandle';
 import {
@@ -13,6 +14,7 @@ import { BlueButton, GreenButton } from '../../../components/buttonStyles';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import SpeedDialTemplate from '../../../components/SpeedDialTemplate';
 import Popup from '../../../components/Popup';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { exportToExcel, getCurrentDateString } from '../../../utils/excelExport';
 
@@ -24,10 +26,11 @@ const ShowTeachers = () => {
     const dispatch = useDispatch();
     const { teachersList, loading, error, response } = useSelector((state) => state.teacher);
     const { currentUser } = useSelector((state) => state.user);
+    const location = useLocation();
 
     useEffect(() => {
         dispatch(getAllTeachers(currentUser._id));
-    }, [currentUser._id, dispatch]);
+    }, [currentUser._id, dispatch, location.pathname]);
 
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
@@ -47,7 +50,7 @@ const ShowTeachers = () => {
     const actions = [
         {
             icon: <PersonAddAlt1Icon color="primary" />, name: 'Add New Teacher',
-            action: () => navigate("/Admin/teachers/chooseclass")
+action: () => navigate("/Admin/teachers/addteacher")
         },
         {
             icon: <PersonRemoveIcon color="error" />, name: 'Delete All Teachers',
@@ -70,7 +73,7 @@ const ShowTeachers = () => {
                 <Typography variant="body1" sx={{ mb: 3, color: 'text.secondary' }}>
                     Add teachers to get started
                 </Typography>
-                <GreenButton variant="contained" onClick={() => navigate("/Admin/teachers/chooseclass")}>
+                <GreenButton variant="contained" onClick={() => navigate("/Admin/teachers/addteacher")}>
                     Add Teacher
                 </GreenButton>
                 <Box sx={{ mt: 2 }}>
@@ -82,19 +85,22 @@ const ShowTeachers = () => {
 
     const columns = [
         { id: 'name', label: 'Name', minWidth: 170 },
-        { id: 'teachSubject', label: 'Subject', minWidth: 100 },
-        { id: 'teachSclass', label: 'Class', minWidth: 170 },
+        { id: 'email', label: 'Email', minWidth: 200 },
+        { id: 'phone', label: 'Phone', minWidth: 150 },
+        { id: 'address', label: 'Address', minWidth: 250 },
     ];
+
 
     const rows = teachersList.map((teacher) => {
         return {
             name: teacher.name,
-            teachSubject: teacher.teachSubject?.subName || null,
-            teachSclass: teacher.teachSclass?.sclassName || 'Not Assigned',
-            teachSclassID: teacher.teachSclass?._id || '',
-            id: teacher._id,
+            email: teacher.email,
+            phone: teacher.phone || 'Not Provided',
+            address: teacher.address || 'Not Provided',
+             id: teacher._id,
         };
     });
+
 
     // Export teachers to Excel
     const handleExportTeachers = () => {
@@ -108,8 +114,8 @@ const ShowTeachers = () => {
             'Email': teacher.email || '-',
             'Subject': teacher.teachSubject?.subName || 'Not Assigned',
             'Class': teacher.teachSclass?.sclassName || 'Not Assigned',
-            'Phone': teacher.phone || '-',
-            'Address': teacher.address || '-',
+            'Phone': teacher.phone || 'Not Provided',
+            'Address': teacher.address || 'Not Provided',
             'Created At': teacher.createdAt ? new Date(teacher.createdAt).toLocaleDateString() : '-'
         }));
 
@@ -155,22 +161,7 @@ const ShowTeachers = () => {
                                     <StyledTableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                                         {columns.map((column) => {
                                             const value = row[column.id];
-                                            if (column.id === 'teachSubject') {
-                                                return (
-                                                    <StyledTableCell key={column.id} align={column.align}>
-                                                        {value ? (
-                                                            value
-                                                        ) : (
-                                                            <Button variant="contained"
-                                                                onClick={() => {
-                                                                    navigate(`/Admin/teachers/choosesubject/${row.teachSclassID}/${row.id}`)
-                                                                }}>
-                                                                Add Subject
-                                                            </Button>
-                                                        )}
-                                                    </StyledTableCell>
-                                                );
-                                            }
+
                                             return (
                                                 <StyledTableCell key={column.id} align={column.align}>
                                                     {column.format && typeof value === 'number' ? column.format(value) : value}

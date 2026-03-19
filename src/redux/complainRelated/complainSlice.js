@@ -28,15 +28,38 @@ const complainSlice = createSlice({
         getError: (state, action) => {
             state.loading = false;
             state.error = action.payload;
+        },
+        createRequest: (state) => {
+            state.loading = true;
+        },
+        createSuccess: (state) => {
+            state.loading = false;
+            state.response = "Complaint submitted successfully!";
+            state.error = null;
+        },
+        createFailed: (state, action) => {
+            state.response = action.payload;
+            state.loading = false;
+            state.error = null;
+        },
+        createError: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
         }
     },
 });
+
 
 export const {
     getRequest,
     getSuccess,
     getFailed,
-    getError
+    getError,
+    createRequest,
+    createSuccess,
+    createFailed,
+    createError
 } = complainSlice.actions;
+
 
 export const complainReducer = complainSlice.reducer;

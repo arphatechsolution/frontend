@@ -44,6 +44,8 @@ const fadeIn = keyframes`
 const TeacherDashboard = () => {
     const [open, setOpen] = useState(true);
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [currentDate, setCurrentDate] = useState(new Date());
+    const { currentUser } = useSelector((state) => state.user);
     const location = useLocation();
     
     const theme = useTheme();
@@ -68,6 +70,18 @@ const TeacherDashboard = () => {
         }
     }, [location.pathname, isMobile]);
 
+    // Update date every minute
+    useEffect(() => {
+        const timer = setInterval(() => setCurrentDate(new Date()), 60000);
+        return () => clearInterval(timer);
+    }, []);
+
+    const teacherName = currentUser?.name || "Teacher";
+
+    const formatDate = (date) => {
+        return formatNepaliDate(date, { format: 'full', showDayName: true });
+    };
+
     // Drawer content - no Toolbar needed since AppBar provides the header
     const drawerContent = (
         <>
@@ -79,113 +93,130 @@ const TeacherDashboard = () => {
     );
 
     return (
-        <>
-            <Box sx={{ display: 'flex' }}>
-                <CssBaseline />
-                <StyledAppBar position='fixed'>
-                    <Toolbar sx={{ pr: '24px', justifyContent: 'space-between' }}>
+        <DashboardContainer>
+            <CssBaseline />
+            <StyledAppBar position='fixed'>
+                <Toolbar sx={{ pr: '24px', justifyContent: 'space-between' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <IconButton
-                                edge="start"
-                                color="inherit"
-                                aria-label="open drawer"
-                                onClick={toggleDrawer}
-                                sx={{ marginRight: '16px' }}
-                            >
-                                <MenuIcon />
-                            </IconButton>
-                            <WelcomeText>Teacher Dashboard</WelcomeText>
-                        </Box>
+                        <IconButton
+                            edge="start"
+                            color="inherit"
+                            aria-label="open drawer"
+                            onClick={toggleDrawer}
+                            sx={{ marginRight: '16px' }}
+                        >
+                            {open ? <ChevronLeftIcon /> : <MenuIcon />}
+                        </IconButton>
+                        <WelcomeText>Welcome back, {teacherName}! 👋</WelcomeText>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <DateBadge>
+                            📅 {formatDate(currentDate)}
+                        </DateBadge>
                         <AccountMenu />
-                    </Toolbar>
-                </StyledAppBar>
-                
-                {/* Mobile Drawer - Temporary */}
-                {isMobile && (
-                    <MuiDrawer
-                        variant="temporary"
-                        open={mobileOpen}
-                        onClose={handleDrawerToggle}
-                        sx={styles.mobileDrawerStyled}
-                        PaperProps={{
-                            sx: styles.mobileDrawerPaper
-                        }}
-                    >
-                        {drawerContent}
-                    </MuiDrawer>
-                )}
-                
-                {/* Desktop Drawer - Permanent */}
-                {!isMobile && (
-                    <MuiDrawer variant="permanent" open={open} sx={styles.drawerStyled} PaperProps={{ sx: styles.drawerPaperStyled }}>
-                        {drawerContent}
-                    </MuiDrawer>
-                )}
-                
-                <Box 
-                    component="main" 
-                    sx={{
-                        backgroundColor: '#f0f2f5',
-                        flexGrow: 1,
-                        minHeight: '100vh',
-                        height: 'auto',
-                        overflow: 'auto',
-                        p: [2, 3],
-                        ml: isMobile ? 0 : (open ? '240px' : '72px'),
-                        transition: (theme) => theme.transitions.create(['margin'], {
-                            easing: theme.transitions.easing.sharp,
-                            duration: theme.transitions.duration.leavingScreen,
-                        }),
+                    </Box>
+                </Toolbar>
+            </StyledAppBar>
+            
+            {/* Mobile Drawer - Temporary */}
+            {isMobile && (
+                <MuiDrawer
+                    variant="temporary"
+                    open={mobileOpen}
+                    onClose={handleDrawerToggle}
+                    sx={styles.mobileDrawerStyled}
+                    PaperProps={{
+                        sx: styles.mobileDrawerPaper
                     }}
                 >
-                    <Toolbar />
-                    <Routes>
-                        <Route path="/" element={<TeacherHomePage />} />
-                        <Route path='*' element={<Navigate to="/" />} />
-                        <Route path="/Teacher/dashboard" element={<TeacherHomePage />} />
-                        <Route path="/Teacher/profile" element={<TeacherProfile />} />
-                        <Route path="/Teacher/complain" element={<TeacherComplain />} />
-                        <Route path="/Teacher/attendance" element={<TakeAttendance />} />
-                        <Route path="/Teacher/homework" element={<Homework />} />
-                        <Route path="/Teacher/notes" element={<TeacherNotes />} />
-                        <Route path="/Teacher/marks" element={<TeacherMarks />} />
+                    {drawerContent}
+                </MuiDrawer>
+            )}
+            
+            {/* Desktop Drawer - Permanent */}
+            {!isMobile && (
+                <MuiDrawer variant="permanent" open={open} sx={styles.drawerStyled} PaperProps={{ sx: styles.drawerPaperStyled }}>
+                    {drawerContent}
+                </MuiDrawer>
+            )}
+            
+            <Box 
+                component="main" 
+                sx={{
+                    backgroundColor: '#f0f2f5',
+                    flexGrow: 1,
+                    minHeight: '100vh',
+                    height: 'auto',
+                    overflow: 'auto',
+                    p: [2, 3],
+                    ml: isMobile ? 0 : (open ? '240px' : '72px'),
+                    transition: (theme) => theme.transitions.create(['margin'], {
+                        easing: theme.transitions.easing.sharp,
+                        duration: theme.transitions.duration.leavingScreen,
+                    }),
+                }}
+            >
+                <Toolbar />
+                <Routes>
+                    <Route path="/" element={<TeacherHomePage />} />
+                    <Route path='*' element={<Navigate to="/" />} />
+                    <Route path="/Teacher/dashboard" element={<TeacherHomePage />} />
+                    <Route path="/Teacher/profile" element={<TeacherProfile />} />
+                    <Route path="/Teacher/complain" element={<TeacherComplain />} />
+                    <Route path="/Teacher/attendance" element={<TakeAttendance />} />
+                    <Route path="/Teacher/homework" element={<Homework />} />
+                    <Route path="/Teacher/notes" element={<TeacherNotes />} />
+                    <Route path="/Teacher/marks" element={<TeacherMarks />} />
 
-                        <Route path="/Teacher/class" element={<TeacherClassDetails />} />
-                        <Route path="/Teacher/class/:id" element={<TeacherClassDetails />} />
-                        <Route path="/Teacher/class/student/:id" element={<TeacherViewStudent />} />
+                    <Route path="/Teacher/class" element={<TeacherClassDetails />} />
+                    <Route path="/Teacher/class/:id" element={<TeacherClassDetails />} />
+                    <Route path="/Teacher/class/student/:id" element={<TeacherViewStudent />} />
 
-                        <Route path="/Teacher/class/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
-                        <Route path="/Teacher/class/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
+                    <Route path="/Teacher/class/student/attendance/:studentID/:subjectID" element={<StudentAttendance situation="Subject" />} />
+                    <Route path="/Teacher/class/student/marks/:studentID/:subjectID" element={<StudentExamMarks situation="Subject" />} />
 
-                        <Route path="/Teacher/exam-routine" element={<TeacherExamRoutine />} />
+                    <Route path="/Teacher/exam-routine" element={<TeacherExamRoutine />} />
 
-                        <Route path="/logout" element={<Logout />} />
-                    </Routes>
-                </Box>
+                    <Route path="/logout" element={<Logout />} />
+                </Routes>
             </Box>
-        </>
+        </DashboardContainer>
     );
-}
+};
 
-export default TeacherDashboard
+export default TeacherDashboard;
+
+// DashboardContainer styled component
+const DashboardContainer = styled(Box)`
+    display: flex;
+    background: linear-gradient(135deg, #1f1f38, #2c2c6c);
+    min-height: 100vh;
+`;
+
+// DateBadge styled component
+const DateBadge = styled(Box)`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    color: white;
+    font-weight: 500;
+    font-size: 0.85rem;
+    backdrop-filter: blur(10px);
+    animation: ${fadeIn} 0.5s ease-out 0.2s both;
+    
+    &:hover {
+        background: rgba(255, 255, 255, 0.25);
+    }
+    
+    @media (max-width: 600px) {
+        display: none;
+    }
+`;
 
 const styles = {
-    boxStyled: {
-        backgroundColor: '#f0f2f5',
-        flexGrow: 1,
-        minHeight: '100vh',
-        height: 'auto',
-        overflow: 'auto',
-        p: [2, 3],
-    },
-    toolBarStyled: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        px: [1],
-        background: 'rgba(40, 40, 80, 0.95)',
-        color: '#fff',
-    },
     drawerStyled: {
         position: 'fixed',
         top: 0,
@@ -218,10 +249,6 @@ const styles = {
             fontSize: '1.4rem',
         },
     },
-    chevronButton: {
-        color: 'rgba(255, 255, 255, 0.9)',
-    },
-    // Mobile drawer styles
     mobileDrawerStyled: {
         display: 'flex',
         '& .MuiDrawer-paper': {
@@ -250,7 +277,7 @@ const styles = {
             fontSize: '1.4rem',
         },
     },
-}
+};
 
 // Styled Components
 const StyledAppBar = styled(AppBar)`
@@ -268,4 +295,3 @@ const WelcomeText = styled(Typography)`
         display: none;
     }
 `;
-

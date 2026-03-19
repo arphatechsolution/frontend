@@ -21,21 +21,40 @@ const SeeComplains = () => {
   }
 
   const complainColumns = [
-    { id: 'user', label: 'User', minWidth: 170 },
-    { id: 'complaint', label: 'Complaint', minWidth: 100 },
+    { id: 'userType', label: 'User Type', minWidth: 120 },
+    { id: 'user', label: 'User Name', minWidth: 170 },
+    { id: 'complaint', label: 'Complaint', minWidth: 300 },
     { id: 'date', label: 'Date', minWidth: 170 },
   ];
+
 
   const complainRows = complainsList && complainsList.length > 0 && complainsList.map((complain) => {
     const date = new Date(complain.date);
     const dateString = date.toString() !== "Invalid Date" ? date.toISOString().substring(0, 10) : "Invalid Date";
+    
+    let userType = 'Unknown';
+    let userName = 'N/A';
+    
+    if (complain.user && complain.user.name) {
+        userName = complain.user.name;
+    }
+    
+    if (complain.user && complain.user.role) {
+        userType = complain.user.role.charAt(0).toUpperCase() + complain.user.role.slice(1);
+    } else if (complain.user && complain.user._id) {
+        userType = 'User';
+    }
+    
     return {
-      user: complain.user.name,
+      userType,
+      user: userName,
       complaint: complain.complaint,
       date: dateString,
       id: complain._id,
     };
   });
+
+
 
   const ComplainButtonHaver = ({ row }) => {
     return (

@@ -33,14 +33,28 @@ const Data = styled(CountUp)`
   color: green;
 `;
 
-const ClassCard = styled(Card)`
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  }
-`;
+    const ClassCard = styled(Card)`
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      background: #ffffff !important;
+      color: #1a1a2e !important;
+      border-radius: 16px !important;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+      }
+      & * {
+        color: #1a1a2e !important;
+      }
+      & p, & span {
+        color: #1a1a2e !important;
+        font-size: 1.05rem !important;
+      }
+      & h6 {
+        font-size: 1.3rem !important;
+      }
+    `;
 
 const TeacherHomePage = () => {
     const { currentUser } = useSelector((state) => state.user);
@@ -169,22 +183,10 @@ const TeacherHomePage = () => {
                                 </StyledPaper>
                             </Grid>
                             <Grid item xs={12} md={3} lg={3}>
-                                <StyledPaper>
-                                    <img src={Tests} alt="Tests" />
-                                    <Title>
-                                        Tests Taken
-                                    </Title>
-                                    <Data start={0} end={24} duration={4} />
-                                </StyledPaper>
+                                {/* Tests Taken card removed */}
                             </Grid>
                             <Grid item xs={12} md={3} lg={3}>
-                                <StyledPaper>
-                                    <img src={Time} alt="Time" />
-                                    <Title>
-                                        Total Hours
-                                    </Title>
-                                    <Data start={0} end={30} duration={4} suffix="hrs"/>
-                                </StyledPaper>
+                                {/* Total Hours card removed */}
                             </Grid>
                             <Grid item xs={12}>
                                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>

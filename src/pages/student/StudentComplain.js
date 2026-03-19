@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import { Box, CircularProgress, Stack, TextField, Typography, Paper, Container, Button, Avatar } from '@mui/material';
 import Popup from '../../components/Popup';
 import { BlueButton } from '../../components/buttonStyles';
-import { addStuff } from '../../redux/userRelated/userHandle';
+import { createComplain } from '../../redux/complainRelated/complainHandle';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+
 import styled, { keyframes } from 'styled-components';
 
 const fadeIn = keyframes`
@@ -22,11 +24,13 @@ const StudentComplain = () => {
     const [date, setDate] = useState("");
 
     const dispatch = useDispatch()
-    const { status, currentUser, error } = useSelector(state => state.user);
+    const navigate = useNavigate()
+    const { currentUser } = useSelector(state => state.user);
+    const { status: complainStatus, loading, response: complainResponse, error: complainError } = useSelector(state => state.complain);
 
     const user = currentUser?._id
     const school = currentUser?.school?._id
-    const address = "Complain"
+
 
     const [loader, setLoader] = useState(false)
     const [message, setMessage] = useState("");
@@ -42,21 +46,29 @@ const StudentComplain = () => {
     const submitHandler = (event) => {
         event.preventDefault()
         setLoader(true)
-        dispatch(addStuff(fields, address))
+        dispatch(createComplain(fields))
     };
 
     useEffect(() => {
-        if (status === "added") {
+        if (complainStatus === "createSuccess") {
             setLoader(false)
-            setShowPopup(true)
+            setComplaint("")
+            setDate("")
             setMessage("Complaint submitted successfully!")
-        }
-        else if (error) {
-            setLoader(false)
             setShowPopup(true)
-            setMessage("Network Error")
         }
-    }, [status, error])
+        else if (complainResponse) {
+            setLoader(false)
+            setMessage(complainResponse)
+            setShowPopup(true)
+        }
+        else if (complainError) {
+            setLoader(false)
+            setMessage("Network Error")
+            setShowPopup(true)
+        }
+    }, [complainStatus, complainResponse, complainError])
+
 
     return (
         <PageContainer>
