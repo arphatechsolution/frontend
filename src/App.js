@@ -31,10 +31,12 @@ const App = () => {
           <Route path="/AdminForgotPassword" element={<ForgotPassword role="Admin" />} />
           <Route path="/StudentForgotPassword" element={<ForgotPassword role="Student" />} />
           <Route path="/TeacherForgotPassword" element={<ForgotPassword role="Teacher" />} />
+          <Route path="/ParentForgotPassword" element={<ForgotPassword role="Parent" />} />
 
           <Route path="/Adminregister" element={<AdminRegisterPage />} />
 
           <Route path='*' element={<Navigate to="/" />} />
+
         </Routes>}
 
       {currentRole === "Admin" &&

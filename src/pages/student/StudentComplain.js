@@ -38,6 +38,7 @@ const StudentComplain = () => {
 
     const fields = {
         user,
+        userModel: "student",
         date,
         complaint,
         school,

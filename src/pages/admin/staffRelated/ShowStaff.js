@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getAllSimpleStaffs, deleteSimpleStaff, deleteAllSimpleStaffs } from '../../../redux/staffRelated/staffHandle';
+import { exportToExcel, getCurrentDateString } from '../../../utils/excelExport';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import { Button as MuiButton } from '@mui/material';
 import { StyledTableCell, StyledTableRow } from '../../../components/styles';
 import { GreenButton } from '../../../components/buttonStyles';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
@@ -9,27 +12,20 @@ import styled, { keyframes } from 'styled-components';
 import PersonIcon from '@mui/icons-material/Person';
 import SpeedDialTemplate from '../../../components/SpeedDialTemplate';
 import Popup from '../../../components/Popup';
-import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
-import AddIcon from '@mui/icons-material/Add';
+ import AddIcon from '@mui/icons-material/Add';
 import GroupIcon from '@mui/icons-material/Group';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import Avatar from '@mui/material/Avatar';
+ import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
-import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
+ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
+ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
+ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Box from '@mui/material/Box';
+ import Box from '@mui/material/Box';
 
 // Animation keyframes
 const fadeIn = keyframes`
@@ -52,10 +48,28 @@ const ShowStaff = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    const navigate = useNavigate();
+const navigate = useNavigate();
     const dispatch = useDispatch();
     const { staffList, loading, error, response } = useSelector((state) => state.staff);
     const { currentUser } = useSelector((state) => state.user);
+
+    const handleStaffExport = () => {
+        if (!Array.isArray(staffList) || staffList.length === 0) {
+            return;
+        }
+
+        const exportData = staffList.map((staff) => ({
+            'Photo URL': staff.photo ? `http://localhost:5000/${staff.photo}` : 'No Photo',
+            'Name': staff.name,
+            'Address': staff.address || 'N/A',
+            'Position': staff.position || 'N/A',
+            'Phone': staff.phone || 'N/A',
+            'ID': staff._id
+        }));
+
+        const fileName = `Staff_List_${getCurrentDateString()}`;
+        exportToExcel(exportData, fileName, 'Staff List');
+    };
 
     useEffect(() => {
         dispatch(getAllSimpleStaffs(currentUser._id));
@@ -161,14 +175,49 @@ const ShowStaff = () => {
         <PageContainer>
             <MainContainer>
                 <HeaderSection>
-                    <HeaderLeft>
-                        <HeaderTitle>👥 Staff Management</HeaderTitle>
-                        <HeaderSubtitle>Manage staff profiles and positions</HeaderSubtitle>
-                    </HeaderLeft>
-                    <AddButton variant="contained" onClick={() => navigate("/Admin/addstaff")}>
-                        <AddIcon sx={{ mr: 1 }} />
+                <HeaderLeft>
+                    <HeaderTitle>👥 Staff Management</HeaderTitle>
+                    <HeaderSubtitle>Manage staff profiles and positions</HeaderSubtitle>
+                </HeaderLeft>
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                    <MuiButton 
+                        variant="contained" 
+                        onClick={() => navigate("/Admin/addstaff")}
+                        sx={{ 
+                            borderRadius: '12px',
+                            padding: '10px 20px',
+                            fontWeight: 600,
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important',
+                            boxShadow: '0 2px 8px rgba(102, 126, 234, 0.3) !important',
+                            '&:hover': {
+                                boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4) !important',
+                                transform: 'translateY(-2px)'
+                            }
+                        }}
+                        startIcon={<AddIcon />}
+                    >
                         Add Staff
-                    </AddButton>
+                    </MuiButton>
+                    <MuiButton 
+                        variant="outlined" 
+                        onClick={handleStaffExport}
+                        startIcon={<FileDownloadIcon />}
+                        sx={{ 
+                            borderRadius: '12px',
+                            padding: '10px 20px',
+                            fontWeight: 600,
+                            borderColor: '#4CAF50',
+                            color: '#4CAF50',
+                            '&:hover': {
+                                borderColor: '#45a049',
+                                backgroundColor: '#45a049',
+                                color: 'white'
+                            }
+                        }}
+                    >
+                        Export Staff
+                    </MuiButton>
+                </Box>
                 </HeaderSection>
 
                 <StatsRow>

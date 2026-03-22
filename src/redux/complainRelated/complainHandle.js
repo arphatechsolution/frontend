@@ -7,7 +7,11 @@ import {
     createRequest,
     createSuccess,
     createFailed,
-    createError
+    createError,
+    deleteRequest,
+    deleteSuccess,
+    deleteFailed,
+    deleteError
 } from './complainSlice';
 
 
@@ -68,4 +72,30 @@ export const createComplain = (fields) => async (dispatch) => {
         }
     }
 }
+
+export const deleteComplain = (schoolId, complainId) => async (dispatch) => {
+    dispatch(deleteRequest());
+    try {
+        const result = await axios.delete(`${process.env.REACT_APP_BASE_URL}/Complains/${schoolId}`, {
+            data: { ids: [complainId] }
+        });
+        dispatch(deleteSuccess());
+        dispatch(getAllComplains(schoolId, "Complain")); // Refresh list
+    } catch (error) {
+        dispatch(deleteError(extractErrorMessage(error)));
+    }
+};
+
+export const deleteComplains = (schoolId, ids) => async (dispatch) => {
+    dispatch(deleteRequest());
+    try {
+        const result = await axios.delete(`${process.env.REACT_APP_BASE_URL}/Complains/${schoolId}`, {
+            data: { ids }
+        });
+        dispatch(deleteSuccess());
+        dispatch(getAllComplains(schoolId, "Complain")); // Refresh list
+    } catch (error) {
+        dispatch(deleteError(extractErrorMessage(error)));
+    }
+};
 

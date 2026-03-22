@@ -45,6 +45,23 @@ const complainSlice = createSlice({
         createError: (state, action) => {
             state.loading = false;
             state.error = action.payload;
+        },
+        deleteRequest: (state) => {
+            state.loading = true;
+        },
+        deleteSuccess: (state) => {
+            state.loading = false;
+            state.response = "Complains deleted successfully";
+            state.error = null;
+        },
+        deleteFailed: (state, action) => {
+            state.response = action.payload;
+            state.loading = false;
+            state.error = null;
+        },
+        deleteError: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
         }
     },
 });
@@ -58,7 +75,11 @@ export const {
     createRequest,
     createSuccess,
     createFailed,
-    createError
+    createError,
+    deleteRequest,
+    deleteSuccess,
+    deleteFailed,
+    deleteError
 } = complainSlice.actions;
 
 

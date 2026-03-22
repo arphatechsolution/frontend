@@ -1,27 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Box, TextField, Button, Typography, Alert } from '@mui/material';
+import { createComplain } from '../../redux/complainRelated/complainHandle';
 
 const TeacherComplain = () => {
-  const [studentName, setStudentName] = useState('');
-  const [subject, setSubject] = useState('');
   const [complaint, setComplaint] = useState('');
-  const [success, setSuccess] = useState(false);
+  const [date, setDate] = useState('');
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { currentUser } = useSelector((state) => state.user);
+  const { loading, response: complainResponse, error: complainError } = useSelector((state) => state.complain);
+
+  const user = currentUser?._id;
+  const school = currentUser?.school?._id;
+
+  const fields = {
+    user,
+    userModel: "teacher",
+    date,
+    complaint,
+    school,
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // Simulating complaint submission (Replace with API call)
-    console.log('Complaint Submitted:', { studentName, subject, complaint });
-    
-    setSuccess(true);
-
-    // Clear input fields after submission
-    setStudentName('');
-    setSubject('');
-    setComplaint('');
-
-    // Hide success message after 3 seconds
-    setTimeout(() => setSuccess(false), 3000);
+    dispatch(createComplain(fields));
   };
 
   return (
@@ -30,29 +35,23 @@ const TeacherComplain = () => {
         Teacher Complaint Form
       </Typography>
 
-      {success && <Alert severity="success">Complaint submitted successfully!</Alert>}
+      {complainResponse && <Alert severity="success">{complainResponse}</Alert>}
+      {complainError && <Alert severity="error">{complainError}</Alert>}
 
       <form onSubmit={handleSubmit}>
         <TextField
           fullWidth
-          label="Student Name"
+          label="Date"
+          type="date"
           variant="outlined"
           margin="normal"
-          value={studentName}
-          onChange={(e) => setStudentName(e.target.value)}
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
           required
+          InputLabelProps={{
+            shrink: true,
+          }}
         />
-        
-        <TextField
-          fullWidth
-          label="Subject"
-          variant="outlined"
-          margin="normal"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-          required
-        />
-
         <TextField
           fullWidth
           label="Complaint Details"
@@ -64,9 +63,14 @@ const TeacherComplain = () => {
           onChange={(e) => setComplaint(e.target.value)}
           required
         />
-
-        <Button type="submit" variant="contained" sx={{ mt: 2, backgroundColor: '#02250b' }} fullWidth>
-          Submit Complaint
+        <Button 
+          type="submit" 
+          variant="contained" 
+          sx={{ mt: 2, backgroundColor: '#02250b' }} 
+          fullWidth 
+          disabled={loading}
+        >
+          {loading ? 'Submitting...' : 'Submit Complaint'}
         </Button>
       </form>
     </Box>
