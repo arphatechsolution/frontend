@@ -8,6 +8,8 @@ import {
     TableHead, TablePagination, Button, Box, IconButton, Typography,
 } from '@mui/material';
 import { deleteUser } from '../../../redux/userRelated/userHandle';
+import PersonIcon from '@mui/icons-material/Person';
+import Avatar from '@mui/material/Avatar';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import { StyledTableCell, StyledTableRow } from '../../../components/styles';
 import { BlueButton, GreenButton } from '../../../components/buttonStyles';
@@ -84,6 +86,7 @@ action: () => navigate("/Admin/teachers/addteacher")
     }
 
     const columns = [
+        { id: 'photo', label: 'Photo', minWidth: 80 },
         { id: 'name', label: 'Name', minWidth: 170 },
         { id: 'email', label: 'Email', minWidth: 200 },
         { id: 'phone', label: 'Phone', minWidth: 150 },
@@ -93,6 +96,7 @@ action: () => navigate("/Admin/teachers/addteacher")
 
     const rows = teachersList.map((teacher) => {
         return {
+            photo: teacher.photo,
             name: teacher.name,
             email: teacher.email,
             phone: teacher.phone || 'Not Provided',
@@ -100,6 +104,21 @@ action: () => navigate("/Admin/teachers/addteacher")
              id: teacher._id,
         };
     });
+
+    const PhotoCell = ({ photo }) => (
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {photo ? (
+                <Avatar 
+                    src={`http://localhost:5000/${photo}`} 
+                    sx={{ width: 44, height: 44 }}
+                />
+            ) : (
+                <Avatar sx={{ width: 44, height: 44, bgcolor: '#667eea' }}>
+                    <PersonIcon />
+                </Avatar>
+            )}
+        </Box>
+    );
 
 
     // Export teachers to Excel
@@ -110,6 +129,7 @@ action: () => navigate("/Admin/teachers/addteacher")
         }
 
         const exportData = teachersList.map((teacher) => ({
+            'Photo URL': teacher.photo ? `http://localhost:5000/${teacher.photo}` : 'No Photo',
             'Name': teacher.name,
             'Email': teacher.email || '-',
             'Subject': teacher.teachSubject?.subName || 'Not Assigned',
@@ -161,7 +181,9 @@ action: () => navigate("/Admin/teachers/addteacher")
                                     <StyledTableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                                         {columns.map((column) => {
                                             const value = row[column.id];
-
+                                            if (column.id === 'photo') {
+                                                return <PhotoCell key={column.id} photo={value} />;
+                                            }
                                             return (
                                                 <StyledTableCell key={column.id} align={column.align}>
                                                     {column.format && typeof value === 'number' ? column.format(value) : value}
