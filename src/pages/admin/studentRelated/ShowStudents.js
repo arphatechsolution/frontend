@@ -126,15 +126,19 @@ const ShowStudents = () => {
 
     // Student columns - only show fields that exist in the schema
     const studentColumns = [
+        { id: 'photo', label: 'Photo', minWidth: 80 },
         { id: 'rollNum', label: 'Roll No.', minWidth: 80 },
         { id: 'name', label: 'Name', minWidth: 170 },
     ];
 
+
     const studentRows = studentsList && studentsList.length > 0 && studentsList.map((student) => ({
+        photo: student.photo,
         rollNum: student.rollNum,
         name: student.name,
         id: student._id,
     }));
+
 
     const StudentButtonHaver = ({ row }) => {
         const options = ['Take Attendance', 'Provide Marks', 'View Fee'];
@@ -284,10 +288,12 @@ const ShowStudents = () => {
             console.log(`Student: ${student.name}, Parent:`, parent);
 
             return {
+                'Photo URL': student.photo ? `http://localhost:5000/${student.photo}` : 'No Photo',
                 'Student ID': getFieldValue(student._id),
                 'Class': student.sclassName?.sclassName || '',
                 'Roll No': getFieldValue(student.rollNum),
                 'Name': getFieldValue(student.name),
+
                 'Address': getFieldValue(student.address),
                 'DOB': formatDate(student.dob),
                 'Parent ID': getParentID(parent),

@@ -17,7 +17,15 @@ const AddFee = () => {
 
     const [studentId, setStudentId] = useState('');
     const [month, setMonth] = useState('');
-    const [monthlyAmount, setMonthlyAmount] = useState('');
+const [categoryAmounts, setCategoryAmounts] = useState({
+  sports: '',
+  tuition: '',
+  hostel: '',
+  transportation: '',
+  stationary: '',
+  extras: ''
+});
+const [totalMonthly, setTotalMonthly] = useState(0);
     const [duesAmount, setDuesAmount] = useState('');
     const [dueDate, setDueDate] = useState('');
     const [description, setDescription] = useState('');
@@ -51,14 +59,35 @@ const AddFee = () => {
         }
     }, [response, dispatch, navigate]);
 
+    const handleCategoryChange = (category, value) => {
+      const numValue = value === '' ? '' : parseFloat(value) || 0;
+      setCategoryAmounts(prev => ({
+        ...prev,
+        [category]: numValue
+      }));
+      
+      // Recalculate total
+      const total = Object.values({
+        ...categoryAmounts,
+        [category]: numValue
+      }).reduce((sum, amt) => sum + (parseFloat(amt) || 0), 0);
+      setTotalMonthly(total);
+    };
+
     const handleAddFee = () => {
-        if (!studentId || !month || !monthlyAmount || !dueDate) {
-            alert("Please fill all required fields");
+        if (!studentId || !month || totalMonthly === 0 || !dueDate) {
+            alert("Please fill all required fields and add at least one fee category amount");
             return;
         }
 
-        const monthly = parseFloat(monthlyAmount);
+        const monthly = totalMonthly;
         const dues = parseFloat(duesAmount) || 0;
+        
+        // Generate category breakdown for description
+        const categories = Object.entries(categoryAmounts)
+          .filter(([_, amt]) => parseFloat(amt) > 0)
+          .map(([cat, amt]) => `${cat.charAt(0).toUpperCase() + cat.slice(1)}: ₹${parseFloat(amt).toLocaleString()}`)
+          .join(', ');
         
         const newFeeDetail = {
             month: `${month} ${currentYear}`,
@@ -66,7 +95,7 @@ const AddFee = () => {
             duesAmount: dues,
             amount: monthly + dues,
             dueDate: dueDate,
-            description: description,
+            description: `${categories}${description ? ` - ${description}` : ''}`,
             status: 'Unpaid'
         };
 
@@ -78,8 +107,8 @@ const AddFee = () => {
 
         dispatch(addFee(data));
         
+        // Reset form
         setMonth('');
-        setMonthlyAmount('');
         setDuesAmount('');
         setDueDate('');
         setDescription('');
@@ -130,15 +159,81 @@ const AddFee = () => {
                         </FormControl>
                     </Grid>
 
+                    <Grid item xs={12}>
+                        <Typography variant="h6" gutterBottom sx={{ color: 'green', fontWeight: 'bold' }}>
+                            Fee Categories (Monthly)
+                        </Typography>
+                    </Grid>
                     <Grid item xs={12} sm={6}>
                         <TextField
                             fullWidth
-                            label="Monthly Fee"
+                            label="Sports Fee"
                             type="number"
-                            value={monthlyAmount}
-                            onChange={(e) => setMonthlyAmount(e.target.value)}
+                            value={categoryAmounts.sports}
+                            onChange={(e) => handleCategoryChange('sports', e.target.value)}
                             InputProps={{ inputProps: { min: 0 } }}
-                            required
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            fullWidth
+                            label="Tuition & Coaching"
+                            type="number"
+                            value={categoryAmounts.tuition}
+                            onChange={(e) => handleCategoryChange('tuition', e.target.value)}
+                            InputProps={{ inputProps: { min: 0 } }}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            fullWidth
+                            label="Hostel Fee"
+                            type="number"
+                            value={categoryAmounts.hostel}
+                            onChange={(e) => handleCategoryChange('hostel', e.target.value)}
+                            InputProps={{ inputProps: { min: 0 } }}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            fullWidth
+                            label="Transportation Fee"
+                            type="number"
+                            value={categoryAmounts.transportation}
+                            onChange={(e) => handleCategoryChange('transportation', e.target.value)}
+                            InputProps={{ inputProps: { min: 0 } }}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            fullWidth
+                            label="Stationary Fee"
+                            type="number"
+                            value={categoryAmounts.stationary}
+                            onChange={(e) => handleCategoryChange('stationary', e.target.value)}
+                            InputProps={{ inputProps: { min: 0 } }}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            fullWidth
+                            label="Extras"
+                            type="number"
+                            value={categoryAmounts.extras}
+                            onChange={(e) => handleCategoryChange('extras', e.target.value)}
+                            InputProps={{ inputProps: { min: 0 } }}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            label="Total Monthly Fee"
+                            type="number"
+                            value={totalMonthly}
+                            InputProps={{ 
+                              inputProps: { min: 0, readOnly: true },
+                              startAdornment: <Typography sx={{ mr: 1, color: 'green', fontWeight: 'bold' }}>₹</Typography>
+                            }}
                         />
                     </Grid>
 

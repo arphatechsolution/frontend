@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Typography, Paper, Grid, Container, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Card, CardContent, Breadcrumbs, Link, FormControl, InputLabel, Select, MenuItem, Alert, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Avatar, Box, Typography, Paper, Grid, Container, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Card, CardContent, Breadcrumbs, Link, FormControl, InputLabel, Select, MenuItem, Alert, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import PersonIcon from '@mui/icons-material/Person';
 import styled, { keyframes } from 'styled-components';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import PersonIcon from '@mui/icons-material/Person';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
@@ -215,6 +215,7 @@ const fetchAvailableData = async (classId) => {
                     <Table>
                         <TableHead>
                             <TableRow sx={{ bgcolor: '#f5f5f5' }}>
+                                <TableCell sx={{ fontWeight: 'bold', width: 60 }}>Photo</TableCell>
                                 <TableCell sx={{ fontWeight: 'bold' }}>Teacher</TableCell>
                                 <TableCell sx={{ fontWeight: 'bold' }}>Email</TableCell>
                                 <TableCell sx={{ fontWeight: 'bold' }}>Subject</TableCell>
@@ -224,6 +225,18 @@ const fetchAvailableData = async (classId) => {
                         <TableBody>
                             {availableData.alreadyAssigned.map((assignment) => (
                                 <TableRow key={assignment._id} hover>
+                                    <TableCell sx={{ p: 1 }}>
+                                        {assignment.teacher?.photo ? (
+                                            <Avatar 
+                                                src={`http://localhost:5000/${assignment.teacher.photo}`} 
+                                                sx={{ width: 44, height: 44 }}
+                                            />
+                                        ) : (
+                                            <Avatar sx={{ width: 44, height: 44, bgcolor: '#667eea' }}>
+                                                <PersonIcon />
+                                            </Avatar>
+                                        )}
+                                    </TableCell>
                                     <TableCell>
                                         <Typography variant="body1" fontWeight="medium">
                                             {assignment.teacher?.name || 'N/A'}

@@ -69,20 +69,20 @@ const IDCardTemplate = ({
                         <div className="photo-frame">
                             {student?.photo ? (
                                 <img 
-                                    src={student.photo} 
-                                    alt={`${student.name}'s Photo`} 
+                                    src={`http://localhost:5000/${student.photo}`} 
+                                    alt={`${student.name || 'Student'} Photo`} 
                                     className="student-photo"
                                     onError={(e) => {
-                                        e.target.src = 'https://via.placeholder.com/100x120?text=No+Photo';
+                                        e.target.style.display = 'none';
                                     }}
                                 />
                             ) : (
                                 <div className="photo-placeholder">
-                                    <span className="photo-initial">{student?.name?.charAt(0) || 'S'}</span>
+                                    <span className="photo-initial">{student?.name?.charAt(0)?.toUpperCase() || 'S'}</span>
                                 </div>
                             )}
                         </div>
-                        <div className="blood-group">Blood: N/A</div>
+                        <div className="blood-group">Blood Group: N/A</div>
                     </div>
 
                     {/* Student Information */}
@@ -122,27 +122,20 @@ const IDCardTemplate = ({
                                 <span className="info-label">Address</span>
                                 <span className="info-value">{student?.address || 'N/A'}</span>
                             </div>
+                            <div className="info-item full-width">
+                                <span className="info-label">Parent</span>
+                                <span className="info-value">{student?.parent?.fatherName || student?.parent?.guardianName || 'N/A'}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Footer */}
                 <div className="id-card-footer">
-                    <div className="barcode-section">
-                        <div className="barcode-visual">
-                            {generateBarcode(student?._id).split('').map((digit, index) => (
-                                <div 
-                                    key={index} 
-                                    className="barcode-line"
-                                    style={{ 
-                                        height: digit === '0' ? '10px' : '24px',
-                                        width: `${15 + parseInt(digit || 0) * 4}%`
-                                    }}
-                                />
-                            ))}
-                        </div>
-                        <span className="barcode-number">{generateBarcode(student?._id)}</span>
-                    </div>
+                            <div className="qr-section">
+                                <div className="qr-code"></div>
+                                <span className="qr-label">QR Code</span>
+                            </div>
                     <div className="id-info">
                         <span className="id-label">Student ID</span>
                         <span className="id-value">{student?._id?.slice(-8).toUpperCase() || 'N/A'}</span>
@@ -150,17 +143,17 @@ const IDCardTemplate = ({
                 </div>
 
                 {/* Validity */}
-                <div className="validity-badge">
+                <div className="validity-stamp">
                     <span>Valid Until: {getValidityDate()}</span>
                 </div>
 
                 {/* Signature Line */}
                 <div className="signature-section">
                     <div className="signature-line">
-                        <span>Student's Signature</span>
+                        <span className="signature-label">Student Signature</span>
                     </div>
                     <div className="signature-line">
-                        <span>Principal's Signature</span>
+                        <span className="signature-label">Principal Signature</span>
                     </div>
                 </div>
             </div>

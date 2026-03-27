@@ -1,5 +1,8 @@
 import React, { useState } from 'react'
 import { StyledTableCell, StyledTableRow } from './styles';
+import Avatar from '@mui/material/Avatar';
+import PersonIcon from '@mui/icons-material/Person';
+
 import { Table, TableBody, TableContainer, TableHead, TablePagination } from '@mui/material';
 
 const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
@@ -33,6 +36,22 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
                                     <StyledTableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                                         {columns.map((column) => {
                                             const value = row[column.id];
+                                            if (column.id === 'photo') {
+                                                return (
+                                                    <StyledTableCell key={column.id} align="center">
+                                                        {value ? (
+                                                            <Avatar 
+                                                                src={`http://localhost:5000/${value}`} 
+                                                                sx={{ width: 44, height: 44 }}
+                                                            />
+                                                        ) : (
+                                                            <Avatar sx={{ width: 44, height: 44, bgcolor: '#667eea' }}>
+                                                                <PersonIcon />
+                                                            </Avatar>
+                                                        )}
+                                                    </StyledTableCell>
+                                                );
+                                            }
                                             return (
                                                 <StyledTableCell key={column.id} align={column.align}>
                                                     {
@@ -43,6 +62,7 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
                                                 </StyledTableCell>
                                             );
                                         })}
+
                                         <StyledTableCell align="center">
                                             <ButtonHaver row={row} />
                                         </StyledTableCell>
