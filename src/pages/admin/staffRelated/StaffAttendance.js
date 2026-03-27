@@ -346,8 +346,11 @@ const StaffAttendance = () => {
                                                 </TableCell>
                                                 <TableCell>
                                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                        <Avatar sx={{ bgcolor: '#7f56da', width: 40, height: 40 }}>
-                                                            {staffMember.name?.charAt(0)}
+                                                        <Avatar 
+                                                            src={staffMember.photo ? `${process.env.REACT_APP_BASE_URL || 'http://localhost:5000'}/${staffMember.photo}` : undefined}
+                                                            sx={{ width: 40, height: 40, bgcolor: '#7f56da' }}
+                                                        >
+                                                            {staffMember.name ? staffMember.name.charAt(0).toUpperCase() : 'S'}
                                                         </Avatar>
                                                         <Box>
                                                             <Typography variant="body1" fontWeight="medium">
