@@ -6,10 +6,6 @@ const ChooseUser = () => {
   const navigate = useNavigate();
 
   const navigateHandler = (user) => {
-    if (user === "Admin") {
-      navigate('/Adminlogin');
-      return;
-    }
     if (user === "Student") {
       navigate('/Studentlogin');
       return;
@@ -27,7 +23,7 @@ const ChooseUser = () => {
   return (
     <AccountTypeChooser
       onSelect={navigateHandler}
-      availableTypes={['Admin', 'Student', 'Teacher', 'Parent']}
+      availableTypes={['Student', 'Teacher', 'Parent']}
       title="Welcome Back"
       subtitle="Choose your account type to continue"
       columns={4}
