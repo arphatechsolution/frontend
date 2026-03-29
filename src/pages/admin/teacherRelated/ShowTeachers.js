@@ -90,8 +90,6 @@ action: () => navigate("/Admin/teachers/addteacher")
         { id: 'name', label: 'Name', minWidth: 170 },
         { id: 'email', label: 'Email', minWidth: 200 },
         { id: 'phone', label: 'Phone', minWidth: 150 },
-        { id: 'sclass', label: 'Assigned Class', minWidth: 150 },
-        { id: 'subject', label: 'Subject', minWidth: 150 },
         { id: 'address', label: 'Address', minWidth: 250 },
     ];
 
@@ -102,8 +100,6 @@ action: () => navigate("/Admin/teachers/addteacher")
             name: teacher.name,
             email: teacher.email,
             phone: teacher.phone || 'Not Provided',
-            sclass: teacher.teachSclass?.sclassName || 'Not Assigned',
-            subject: teacher.teachSubject?.subName || 'Not Assigned',
             address: teacher.address || 'Not Provided',
              id: teacher._id,
         };
@@ -136,8 +132,6 @@ action: () => navigate("/Admin/teachers/addteacher")
             'Photo URL': teacher.photo ? `http://localhost:5000/${teacher.photo}` : 'No Photo',
             'Name': teacher.name,
             'Email': teacher.email || '-',
-            'Subject': teacher.teachSubject?.subName || 'Not Assigned',
-            'Class': teacher.teachSclass?.sclassName || 'Not Assigned',
             'Phone': teacher.phone || 'Not Provided',
             'Address': teacher.address || 'Not Provided',
             'Created At': teacher.createdAt ? new Date(teacher.createdAt).toLocaleDateString() : '-'
@@ -194,12 +188,6 @@ action: () => navigate("/Admin/teachers/addteacher")
                                                 </StyledTableCell>
                                             );
                                         })}
-                                        <StyledTableCell align="center" sx={{ fontWeight: 'medium' }}>
-                                            {row.sclass}
-                                        </StyledTableCell>
-                                        <StyledTableCell align="center" sx={{ fontWeight: 'medium' }}>
-                                            {row.subject}
-                                        </StyledTableCell>
                                         <StyledTableCell align="center">
                                             <IconButton onClick={() => deleteHandler(row.id, "Teacher")}>
                                                 <PersonRemoveIcon color="error" />
